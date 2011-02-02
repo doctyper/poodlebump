@@ -254,9 +254,9 @@ POODLE.Engine = POODLE.Engine || {};
 			
 			$(window).bind("devicemotion", function (e) {
 				gravity = e.accelerationIncludingGravity;
-				x = gravity.x * 10;
+				x = gravity.x * 5;
 				
-				tilter.transition(100).translate(x, 0, 0);
+				tilter.transition(50).translate(x, 0, 0);
 			});
 		}
 	};
