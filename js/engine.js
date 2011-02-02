@@ -112,23 +112,27 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 			
 			var rect = el.rect(),
-			    offsetLeft = rect.left + (rect.width / 2),
+			    offsetLeft = Math.max(0, rect.left),
+			    offsetRight = Math.min(320, rect.left + rect.width),
 			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
 			    i, j, translation = $self.utils.getTransitionValue(),
 			    collision;
 			
 			for (i = 1, j = translation; i < j; i++) {
-				collision = document.elementFromPoint(offsetLeft, offsetTop + i);
+				collision = $(document.elementFromPoint(offsetLeft, offsetTop + i));
 				
-				if (collision && $(collision).hasClass("platform")) {
+				if (!collision.hasClass("platform")) {
+					collision = $(document.elementFromPoint(offsetRight, offsetTop + i));
+				}
+				
+				if (collision.hasClass("platform")) {
 					break;
 				} else {
 					collision = false;
 				}
 			}
 			
-			// console.log(collision);
-			return $(collision);
+			return collision;
 		},
 		
 		centerPlatform : function (platform) {
