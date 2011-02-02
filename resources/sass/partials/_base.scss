@@ -1,0 +1,11 @@
+// Not targeting Opera or KHTML
+$experimental-support-for-opera: false;
+$experimental-support-for-khtml: false;
+$experimental-support-for-microsoft: false;
+
+// OR IE 6 asdfasdf
+$legacy-support-for-ie: false;
+
+// Core imports
+@import 'compass';
+@import "compass/reset";

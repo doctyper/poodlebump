@@ -1,0 +1,62 @@
+/*
+Syntax error: File to import not found or unreadable: partials/animation.
+              Load paths:
+                /Users/doctyper/Sites/doctyper/poodlebump/resources/sass
+                /Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/frameworks/blueprint/stylesheets
+                /Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/frameworks/compass/stylesheets
+                
+        on line 7 of /Users/doctyper/Sites/doctyper/poodlebump/resources/sass/style.scss
+
+Backtrace:
+/Users/doctyper/Sites/doctyper/poodlebump/resources/sass/style.scss:7
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/import_node.rb:64:in `import'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/import_node.rb:25:in `imported_file'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:141:in `visit_import'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:53:in `map'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:53:in `visit_children'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:27:in `visit_children'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:39:in `with_environment'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:26:in `visit_children'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:47:in `visit_root'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:37:in `send'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/base.rb:37:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:18:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:7:in `send'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/visitors/perform.rb:7:in `visit'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/tree/root_node.rb:20:in `render'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/engine.rb:302:in `_render'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/engine.rb:250:in `render'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/util.rb:298:in `silence_sass_warnings'
+/Library/Ruby/Gems/1.8/gems/sass-3.1.0.alpha.218/lib/sass/../sass/engine.rb:250:in `render'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:117:in `compile'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:103:in `timed'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:116:in `compile'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/logger.rb:45:in `red'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:115:in `compile'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:95:in `compile_if_required'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:82:in `run'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:80:in `each'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:80:in `run'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:103:in `timed'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/compiler.rb:79:in `run'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/commands/watch_project.rb:110:in `recompile'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/commands/watch_project.rb:40:in `perform'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/commands/base.rb:18:in `execute'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/commands/project_base.rb:19:in `execute'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/lib/compass/exec/sub_command_ui.rb:15:in `run!'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/bin/compass:25
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/bin/compass:39:in `call'
+/Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/bin/compass:39
+/usr/local/bin/compass:19:in `load'
+/usr/local/bin/compass:19
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: File to import not found or unreadable: partials/animation.\A               Load paths:\A                 /Users/doctyper/Sites/doctyper/poodlebump/resources/sass\A                 /Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/frameworks/blueprint/stylesheets\A                 /Library/Ruby/Gems/1.8/gems/compass-0.11.beta.1/frameworks/compass/stylesheets\A                 \A         on line 7 of /Users/doctyper/Sites/doctyper/poodlebump/resources/sass/style.scss"; }

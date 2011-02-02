@@ -1,0 +1,63 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+section, section * {
+	-webkit-transform: translate3d(0, 0, 0);
+	-webkit-backface-visibility: hidden;
+}
+
+#canvas {
+	position: relative;
+	margin: 0 auto;
+	width: 320px;
+	height: 480px;
+	background: #eee;
+	
+	section {
+		width: 320px;
+		height: 480px;
+		-webkit-transition: -webkit-transform 0.5s ease-in-out;
+	}
+}
+
+#poodler {
+	bottom: 0;
+	left: 0;
+	position: absolute;
+	display: block;
+	width: 46px;
+	height: 45px;
+	background: rgba(255, 0, 0, 0.5);
+	-webkit-transition-property: -webkit-transform;
+	
+	&.bounce-down {
+		-webkit-transition-timing-function: ease-in;
+	}
+}
+
+#poodler-tilt {
+	bottom: -45px;
+	left: 31px;
+	position: absolute;
+	-webkit-transition-property: -webkit-transform;
+}
+
+/*$top: 374px;*/
+/*$top-offset: 60;*/
+
+.platform {
+	bottom: 90px;
+	left: 30px;
+	position: absolute;
+	display: block;
+	width: 57px;
+	height: 15px;
+	background: rgba(0, 0, 255, 0.5);
+	
+/*	@for $i from 1 through 10 {
+		&.test-#{$i} {
+			top: $top - ($top-offset * $i);
+		}
+	}
+*/}
