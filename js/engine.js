@@ -107,6 +107,10 @@ POODLE.Engine = POODLE.Engine || {};
 		},
 		
 		checkForPlatforms : function (el) {
+			if (!el.length) {
+				return;
+			}
+			
 			var rect = el.rect(),
 			    offsetLeft = rect.left + (rect.width / 2),
 			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
@@ -128,6 +132,10 @@ POODLE.Engine = POODLE.Engine || {};
 		},
 		
 		centerPlatform : function (platform) {
+			if (!platform.length) {
+				return;
+			}
+			
 			var rect = platform.rect(),
 			    center = $self.utils.getVerticalCenter(),
 			    section = platform.parent();
@@ -139,6 +147,10 @@ POODLE.Engine = POODLE.Engine || {};
 		},
 		
 		calcOffset : function (el, obj) {
+			if (!el.length) {
+				return;
+			}
+			
 			var elRect = el.rect(),
 			    objRect = obj.rect();
 			
@@ -231,7 +243,7 @@ POODLE.Engine = POODLE.Engine || {};
 				    offset;
 
 				if (!poodler.hasClass("bounce-down")) {
-					if (platform.get(0)) {
+					if (platform.length) {
 						offset = $self.utils.calcOffset(poodler, platform);
 						poodler.translate(0, offset, 0);
 					} else {
