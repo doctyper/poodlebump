@@ -270,10 +270,12 @@ POODLE.Engine = POODLE.Engine || {};
 			
 			$(window).bind("devicemotion", function (e) {
 				gravity = e.accelerationIncludingGravity;
-				x = gravity.x * 5;
-				
-				tilter.transition(50).translate(x, 0, 0);
+				x = gravity.x;
 			});
+			
+			window.setInterval(function () {
+				tilter.translate(x, 0, 0);
+			}, 0);
 		}
 	};
 	
