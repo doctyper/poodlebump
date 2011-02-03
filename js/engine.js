@@ -217,18 +217,17 @@ POODLE.Engine = POODLE.Engine || {};
 		
 		addPlatforms : function (section) {
 			var i, j, platform, previous,
-			    previousX, previousY, constantY,
+			    previousY, constantY,
 			    randomOffset, x, y;
 			
 			for (i = 0, j = 20; i < j; i++) {
 				platform = $('<div></div>').addClass("platform");
 				previous = $(".platform:last-child", section);
-				previousX = previous.get(0).offsetLeft;
 				previousY = window.parseInt(previous.css("bottom"));
 				constantY = $self.utils.getConstantY();
 				randomOffset = $self.utils.getConstantOffset();
 
-				x = $self.utils.randomFromTo(Math.min(320 - 57, previousX + 150), Math.max(0, previousX - 150));
+				x = $self.utils.randomFromTo(0, 320 - 57);
 
 				y = previousY + constantY;
 				y = $self.utils.randomFromTo(y - randomOffset, y + randomOffset);
