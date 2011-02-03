@@ -211,7 +211,7 @@ POODLE.Engine = POODLE.Engine || {};
 				constantY = $self.utils.getConstantY();
 				randomOffset = $self.utils.getConstantOffset();
 
-				x = $self.utils.randomFromTo(Math.min(320, previousX + 150), Math.max(0, previousX - 150));
+				x = $self.utils.randomFromTo(Math.min(320 - 57, previousX + 150), Math.max(0, previousX - 150));
 
 				y = previousY + constantY;
 				y = $self.utils.randomFromTo(y - randomOffset, y + randomOffset);
