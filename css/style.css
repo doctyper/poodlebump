@@ -77,7 +77,7 @@ section, section * {
 /* line 10, ../resources/sass/partials/_global.scss */
 #canvas {
   position: relative;
-  margin: 0 auto;
+  margin: 0;
   width: 320px;
   height: 480px;
   background: #eee;
