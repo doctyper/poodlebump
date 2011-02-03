@@ -249,23 +249,15 @@ POODLE.Engine = POODLE.Engine || {};
 	$self.utils.events = {
 		transitionEnd : function (poodler) {
 			poodler.bind("webkitTransitionEnd", function (e) {
-				var platform = $self.utils.checkForPlatforms(poodler),
-				    transition = $self.utils.getTransitionValue(),
+				var transition = $self.utils.getTransitionValue(),
 				    offset;
 
+				poodler.transition($self.utils.getGlobalTransition());
+				
 				if (!poodler.hasClass("bounce-down")) {
-					if (platform.length) {
-						offset = $self.utils.calcOffset(poodler, platform);
-						poodler.translate(0, offset, 0);
-					} else {
-						poodler.translate(0, transition, 0);
-					}
-
+					poodler.translate(0, transition, 0);
 					poodler.addClass("bounce-down");
 				} else {
-					if (platform) {
-						$self.utils.centerPlatform(platform);
-					}
 					poodler.translate(0, -transition, 0);
 					poodler.removeClass("bounce-down");
 				}
