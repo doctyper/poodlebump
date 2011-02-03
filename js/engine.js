@@ -56,6 +56,14 @@ POODLE.Engine = POODLE.Engine || {};
 			}, 0);
 		},
 		
+		setGlobalTransition : function (value) {
+			$self.vars.globalTransitionValue = value;
+		},
+		
+		getGlobalTransition : function () {
+			return $self.vars.globalTransitionValue;
+		},
+		
 		setVerticalHeight : function (canvas) {
 			$self.vars.verticalHeight = canvas.height();
 		},
