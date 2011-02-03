@@ -300,8 +300,8 @@ POODLE.Engine = POODLE.Engine || {};
 					poodler.transition($self.utils.getGlobalTransition());
 
 					if (!poodler.hasClass("bounce-down")) {
+						poodler.removeClass("game-over").addClass("bounce-down");
 						poodler.translate(0, transition, 0);
-						poodler.addClass("bounce-down");
 					} else {
 						if (!isTriggered) {
 							if (poodler.hasClass("game-over")) {
@@ -313,7 +313,7 @@ POODLE.Engine = POODLE.Engine || {};
 								poodler.addClass("game-over");
 							}
 						} else {
-							poodler.removeClass("bounce-down");
+							poodler.removeClass("game-over").removeClass("bounce-down");
 						}
 
 						poodler.translate(0, -transition, 0);
