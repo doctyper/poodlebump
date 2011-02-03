@@ -90,32 +90,44 @@ section, section * {
 }
 
 /* line 24, ../resources/sass/partials/_global.scss */
-#poodler {
+#poodler-y {
   bottom: 0;
   left: 0;
-  position: absolute;
-  display: block;
   width: 46px;
   height: 45px;
-  background: rgba(255, 0, 0, 0.5);
+  position: absolute;
   -webkit-transition-property: -webkit-transform;
 }
-/* line 34, ../resources/sass/partials/_global.scss */
-#poodler.bounce-down {
+/* line 32, ../resources/sass/partials/_global.scss */
+#poodler-y.bounce-down {
   -webkit-transition-timing-function: ease-in;
 }
 
-/* line 39, ../resources/sass/partials/_global.scss */
-#poodler-tilt {
+/* line 37, ../resources/sass/partials/_global.scss */
+#poodler-x {
   bottom: -45px;
   left: 31px;
   position: absolute;
   -webkit-transition-property: -webkit-transform;
 }
 
-/*$top: 374px;*/
-/*$top-offset: 60;*/
-/* line 49, ../resources/sass/partials/_global.scss */
+/* line 44, ../resources/sass/partials/_global.scss */
+#poodler-z {
+  width: 100%;
+  height: 100%;
+  display: block;
+  -webkit-transform: rotateY(0);
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #ff0000), color-stop(50%, #ff0000), color-stop(50%, #0000ff), color-stop(100%, #0000ff));
+  background: -moz-linear-gradient(left, #ff0000, #ff0000 50%, #0000ff 50%, #0000ff);
+  background: linear-gradient(left, #ff0000, #ff0000 50%, #0000ff 50%, #0000ff);
+  -webkit-backface-visibility: visible;
+}
+/* line 52, ../resources/sass/partials/_global.scss */
+#poodler-z.right {
+  -webkit-transform: rotateY(-180deg);
+}
+
+/* line 57, ../resources/sass/partials/_global.scss */
 .platform {
   bottom: 90px;
   left: 30px;
@@ -124,12 +136,7 @@ section, section * {
   width: 57px;
   height: 15px;
   background: rgba(0, 0, 255, 0.5);
-  /*	@for $i from 1 through 10 {
-  		&.test-#{$i} {
-  			top: $top - ($top-offset * $i);
-  		}
-  	}
-  */
+  border-radius: 10px;
 }
 
 /* line 1, ../resources/sass/partials/_header.scss */

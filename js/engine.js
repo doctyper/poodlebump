@@ -264,13 +264,20 @@ POODLE.Engine = POODLE.Engine || {};
 			}, false);
 		},
 
-		deviceMotion : function (poodler, tilter) {
-			var gravity, x, verifyCollision;
+		deviceMotion : function (poodler, tilter, face) {
+			var gravity, x, previousX = 0, verifyCollision,
+			    direction = "";
 			
 			if ("DeviceMotionEvent" in window) {
 				$(window).bind("devicemotion", function (e) {
 					gravity = e.accelerationIncludingGravity;
 					x = gravity.x;
+					
+					if (x > 0) {
+						direction = "right";
+					} else {
+						direction = "left";
+					}
 				});
 			} else {
 				x = 0;
@@ -295,6 +302,8 @@ POODLE.Engine = POODLE.Engine || {};
 					verifyCollision = !verifyCollision;
 				}
 				
+				face.attr("class", direction);
+				
 				if (!("DeviceMotionEvent" in window)) {
 					x = 0;
 				}
@@ -312,9 +321,10 @@ POODLE.Engine = POODLE.Engine || {};
 	*/
 	$self.initialize = function () {
 		var canvas = $("#canvas"),
-		    poodler = canvas.find("#poodler"),
 		    section = canvas.find("section"),
-		    tilter = canvas.find("#poodler-tilt");
+		    poodler = canvas.find("#poodler-y"),
+		    tilter = canvas.find("#poodler-x"),
+		    face = canvas.find("#poodler-z");
 		
 		// Hide URL Bar
 		$self.utils.hideNavigationBar();
@@ -328,8 +338,8 @@ POODLE.Engine = POODLE.Engine || {};
 		$self.utils.setInitialTransition(poodler, canvas);
 		
 		// Add Events
-		$self.utils.events.transitionEnd(poodler);
-		$self.utils.events.deviceMotion(poodler, tilter);
+		$self.utils.events.transitionEnd(poodler, section);
+		$self.utils.events.deviceMotion(poodler, tilter, face);
 		
 		// Start!
 		$self.utils.activatePoodler(poodler);
