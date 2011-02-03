@@ -254,6 +254,29 @@ POODLE.Engine = POODLE.Engine || {};
 			poodler.transition($self.utils.getGlobalTransition()).translate(0, startValue, 0);
 		},
 		
+		setupPollingEngine : function () {
+			$self.utils.setInterval(function () {
+				$self.utils.fireEvent("poll");
+			}, 0);
+		},
+		
+		addEvent : function (type, handler) {
+			$self.vars.events = $self.vars.events || {};
+			$self.vars.events[type] = $self.vars.events[type] || [];
+			
+			$self.vars.events[type].push(handler);
+		},
+		
+		fireEvent : function (type) {
+			var array = $self.vars.events[type];
+			
+			if (array) {
+				$(array).each(function (i, handler) {
+					handler();
+				});
+			}
+		},
+		
 		activatePoodler : function (poodler) {
 			return poodler.addClass("bounce-up");
 		},
@@ -302,50 +325,68 @@ POODLE.Engine = POODLE.Engine || {};
 			}, false);
 		},
 
-		deviceMotion : function (poodler, tilter, face) {
-			var gravity, x, previousX = 0, verifyCollision,
-			    direction = "";
+		deviceMotion : function () {
+			var gravity;
+			$self.vars.direction = "";
 			
 			if ("DeviceMotionEvent" in window) {
 				$(window).bind("devicemotion", function (e) {
 					gravity = e.accelerationIncludingGravity;
-					x = gravity.x;
 					
-					if (x > 0) {
-						direction = "right";
+					$self.vars.x = gravity.x;
+					
+					if ($self.vars.x > 0) {
+						$self.vars.direction = "right";
 					} else {
-						direction = "left";
+						$self.vars.direction = "left";
 					}
 				});
 			} else {
-				x = 0;
+				$self.vars.x = 0;
 				$(window).bind("keydown", function (e) {
-					x = (e.keyCode === 39) ? 30 : -30;
+					$self.vars.x = (e.keyCode === 39) ? 30 : -30;
 				});
 			}
+		},
+		
+		collision : function (poodler) {
+			$self.utils.addEvent("collision", function () {
+				poodler.trigger("webkitTransitionEnd");
+			});
+		},
+		
+		polling : function (poodler, tilter, face) {
+			var collision, verifyCollision;
 			
-			$self.utils.setInterval(function () {
-				tilter.translate(x, 0, 0);
+			$self.utils.addEvent("poll", function () {
+				tilter.translate($self.vars.x, 0, 0);
 				
-				var collision = $self.utils.checkForCollision(poodler);
+				collision = $self.utils.checkForCollision(poodler);
 				
 				if (collision !== undefined) {
 					poodler.transition(0);
 					poodler.translate(0, collision, 0);
 					
-					if (verifyCollision) {
-						poodler.trigger("webkitTransitionEnd");
+					if (!verifyCollision) {
+						verifyCollision = 1;
 					}
-					
-					verifyCollision = !verifyCollision;
 				}
 				
-				face.attr("class", direction);
+				if (verifyCollision) {
+					if (verifyCollision > 1) {
+						verifyCollision = 0;
+						$self.utils.fireEvent("collision");
+					} else {
+						verifyCollision = verifyCollision + 1;
+					}
+				}
+				
+				face.attr("class", $self.vars.direction);
 				
 				if (!("DeviceMotionEvent" in window)) {
-					x = 0;
+					$self.vars.x = 0;
 				}
-			}, 0);
+			});
 		}
 	};
 	
@@ -372,12 +413,15 @@ POODLE.Engine = POODLE.Engine || {};
 		$self.utils.setVerticalCenter(canvas);
 		
 		// Layout Starting Template
+		$self.utils.setupPollingEngine();
 		$self.utils.layoutInitialGrid(section);
 		$self.utils.setInitialTransition(poodler, canvas);
 		
 		// Add Events
 		$self.utils.events.transitionEnd(poodler, section);
 		$self.utils.events.deviceMotion(poodler, tilter, face);
+		$self.utils.events.collision(poodler);
+		$self.utils.events.polling(poodler, tilter, face);
 		
 		// Start!
 		$self.utils.activatePoodler(poodler);
