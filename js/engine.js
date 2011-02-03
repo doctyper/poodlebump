@@ -194,12 +194,16 @@ POODLE.Engine = POODLE.Engine || {};
 		checkPlatformCount : function (section, platform) {
 			var platforms = $(".platform"),
 			    index = platforms.index(platform),
-			    threshold = $self.utils.getPlatformThreshold(),
-			    verticalHeight = $self.utils.getVerticalHeight();
+			    threshold = $self.utils.getPlatformThreshold();
 			
 			if (platforms.length - index < threshold) {
 				$self.utils.addPlatforms(section);
 			}
+		},
+		
+		removeOldPlatforms : function () {
+			var verticalHeight = $self.utils.getVerticalHeight(),
+			    platforms = $(".platform");
 			
 			platforms.each(function (i, platform) {
 				if ($(platform).rect().top > verticalHeight) {
@@ -272,6 +276,8 @@ POODLE.Engine = POODLE.Engine || {};
 				} else {
 					poodler.translate(0, -transition, 0);
 					poodler.removeClass("bounce-down");
+					
+					$self.utils.removeOldPlatforms();
 				}
 			}, false);
 		},
