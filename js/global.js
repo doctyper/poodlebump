@@ -77,7 +77,6 @@ var POODLE = POODLE || {};
 		isMobile : function () {
 			return ("ontouchstart" in window);
 		}
-		
 	};
 	
 	/*
@@ -89,7 +88,11 @@ var POODLE = POODLE || {};
 	Function: global
 	 	Takes care of a few global functionalities.
 	*/
-	$self.global = function () {};
+	$self.global = function () {
+		$(document.body).bind("touchmove", function (e) {
+			e.preventDefault();
+		});
+	};
 	
 	/*
 	Callback: queue
