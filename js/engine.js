@@ -233,7 +233,8 @@ POODLE.Engine = POODLE.Engine || {};
 			    transition = $self.utils.getTransitionValue(),
 			    startValue = offset - transition;
 
-			poodler.transition(startValue * (startValue / transition)).translate(0, startValue, 0);
+			$self.utils.setGlobalTransition(startValue * (startValue / transition));
+			poodler.transition($self.utils.getGlobalTransition()).translate(0, startValue, 0);
 		},
 		
 		activatePoodler : function (poodler) {
