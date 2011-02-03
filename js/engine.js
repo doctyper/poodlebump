@@ -255,6 +255,10 @@ POODLE.Engine = POODLE.Engine || {};
 		
 		activatePoodler : function (poodler) {
 			return poodler.addClass("bounce-up");
+		},
+		
+		youJustLostTheGame : function () {
+			$self.utils.clearInterval();
 		}
 	};
 	
@@ -263,19 +267,34 @@ POODLE.Engine = POODLE.Engine || {};
 		Shared local events
 	*/
 	$self.utils.events = {
-		transitionEnd : function (poodler) {
+		transitionEnd : function (poodler, section) {
 			poodler.bind("webkitTransitionEnd", function (e) {
-				var transition = $self.utils.getTransitionValue(),
+				var isTriggered = e.constructor.AT_TARGET,
+				    transition = $self.utils.getTransitionValue(),
 				    offset;
-
-				poodler.transition($self.utils.getGlobalTransition());
 				
-				if (!poodler.hasClass("bounce-down")) {
-					poodler.translate(0, transition, 0);
-					poodler.addClass("bounce-down");
-				} else {
-					poodler.translate(0, -transition, 0);
-					poodler.removeClass("bounce-down");
+				if (e.target === this) {
+					poodler.transition($self.utils.getGlobalTransition());
+
+					if (!poodler.hasClass("bounce-down")) {
+						poodler.translate(0, transition, 0);
+						poodler.addClass("bounce-down");
+					} else {
+						if (!isTriggered) {
+							if (poodler.hasClass("game-over")) {
+								console.log("Game Over!");
+								$self.utils.youJustLostTheGame();
+								return false;
+							} else {
+								transition = poodler.rect().top - $("#canvas").height();
+								poodler.addClass("game-over");
+							}
+						} else {
+							poodler.removeClass("bounce-down");
+						}
+
+						poodler.translate(0, -transition, 0);
+					}
 					
 					$self.utils.removeOldPlatforms();
 				}
