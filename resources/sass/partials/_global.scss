@@ -46,7 +46,8 @@ section, section * {
 	height: 100%;
 	display: block;
 	-webkit-transform: rotateY(0);
-	@include background(linear-gradient(left, #f00, #f00 50%, #00f 50%, #00f));
+	background: #333;
+	@include border-radius(0 15px 15px 0);
 	-webkit-backface-visibility: visible;
 	
 	&.right {
@@ -61,6 +62,11 @@ section, section * {
 	display: block;
 	width: 57px;
 	height: 15px;
-	background: rgba(0, 0, 255, 0.5);
+	background: #666;
 	border-radius: 10px;
+	z-index: 1;
+	
+	&.spring {
+		background: #0f0;
+	}
 }

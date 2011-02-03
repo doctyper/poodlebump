@@ -117,17 +117,18 @@ section, section * {
   height: 100%;
   display: block;
   -webkit-transform: rotateY(0);
-  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #ff0000), color-stop(50%, #ff0000), color-stop(50%, #0000ff), color-stop(100%, #0000ff));
-  background: -moz-linear-gradient(left, #ff0000, #ff0000 50%, #0000ff 50%, #0000ff);
-  background: linear-gradient(left, #ff0000, #ff0000 50%, #0000ff 50%, #0000ff);
+  background: #333;
+  -moz-border-radius: 0 15px 15px 0;
+  -webkit-border-radius: 0 15px 15px 0;
+  border-radius: 0 15px 15px 0;
   -webkit-backface-visibility: visible;
 }
-/* line 52, ../resources/sass/partials/_global.scss */
+/* line 53, ../resources/sass/partials/_global.scss */
 #poodler-z.right {
   -webkit-transform: rotateY(-180deg);
 }
 
-/* line 57, ../resources/sass/partials/_global.scss */
+/* line 58, ../resources/sass/partials/_global.scss */
 .platform {
   bottom: 90px;
   left: 30px;
@@ -135,8 +136,13 @@ section, section * {
   display: block;
   width: 57px;
   height: 15px;
-  background: rgba(0, 0, 255, 0.5);
+  background: #666;
   border-radius: 10px;
+  z-index: 1;
+}
+/* line 69, ../resources/sass/partials/_global.scss */
+.platform.spring {
+  background: #0f0;
 }
 
 /* line 1, ../resources/sass/partials/_header.scss */
