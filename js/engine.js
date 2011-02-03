@@ -137,16 +137,15 @@ POODLE.Engine = POODLE.Engine || {};
 			    offsetRight = Math.min(320, rect.left + rect.width),
 			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
 			    i, j, translation = $self.utils.getTransitionValue(),
-			    value,
-			    collision;
+			    value, collision;
 			
 			collision = $(document.elementFromPoint(offsetLeft, offsetTop));
 			
-			if (!collision.hasClass("platform")) {
+			if (collision.length && !collision.hasClass("platform")) {
 				collision = $(document.elementFromPoint(offsetRight, offsetTop));
 			}
 			
-			if (poodler.hasClass("bounce-down") && collision.hasClass("platform")) {
+			if (poodler.hasClass("bounce-down") && collision.length && collision.hasClass("platform")) {
 				value = collision.rect().top - poodler.rect().bottom;
 				$self.utils.centerPlatform(collision);
 			}
