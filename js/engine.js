@@ -37,7 +37,8 @@ POODLE.Engine = POODLE.Engine || {};
 		Shared local variables
 	*/
 	$self.vars = {
-		transitionValue : 75,
+		transitionDuration : 550,
+		transitionValue : 150,
 		firstPlatformOffset : 90,
 		platformHeight : (15 / 2),
 		platformThreshold : 10,
@@ -61,7 +62,7 @@ POODLE.Engine = POODLE.Engine || {};
 		},
 		
 		getGlobalTransition : function () {
-			return $self.vars.globalTransitionValue;
+			return $self.vars.transitionDuration;
 		},
 		
 		setVerticalHeight : function (canvas) {
