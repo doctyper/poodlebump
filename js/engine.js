@@ -273,15 +273,41 @@ POODLE.Engine = POODLE.Engine || {};
 			}, false);
 		},
 
-		deviceMotion : function (tilter) {
-			var gravity, x;
+		deviceMotion : function (poodler, tilter) {
+			var gravity, x, verifyCollision;
 			
-			$(window).bind("devicemotion", function (e) {
-				gravity = e.accelerationIncludingGravity;
-				x = gravity.x * 5;
+			if ("DeviceMotionEvent" in window) {
+				$(window).bind("devicemotion", function (e) {
+					gravity = e.accelerationIncludingGravity;
+					x = gravity.x;
+				});
+			} else {
+				x = 0;
+				$(window).bind("keydown", function (e) {
+					x = (e.keyCode === 39) ? 30 : -30;
+				});
+			}
+			
+			window.setInterval(function () {
+				tilter.translate(x, 0, 0);
 				
-				tilter.transition(50).translate(x, 0, 0);
-			});
+				var collision = $self.utils.checkForCollision(poodler);
+				
+				if (collision !== undefined) {
+					poodler.transition(0);
+					poodler.translate(0, collision, 0);
+					
+					if (verifyCollision) {
+						poodler.trigger("webkitTransitionEnd");
+					}
+					
+					verifyCollision = !verifyCollision;
+				}
+				
+				if (!("DeviceMotionEvent" in window)) {
+					x = 0;
+				}
+			}, 0);
 		}
 	};
 	
@@ -312,7 +338,7 @@ POODLE.Engine = POODLE.Engine || {};
 		
 		// Add Events
 		$self.utils.events.transitionEnd(poodler);
-		$self.utils.events.deviceMotion(tilter);
+		$self.utils.events.deviceMotion(poodler, tilter);
 		
 		// Start!
 		$self.utils.activatePoodler(poodler);
