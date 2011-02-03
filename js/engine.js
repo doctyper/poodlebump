@@ -80,6 +80,19 @@ POODLE.Engine = POODLE.Engine || {};
 			return $self.vars.verticalCenter;
 		},
 		
+		setInterval : function (interval, timer) {
+			$self.vars.interval = window.setInterval(interval, timer);
+		},
+		
+		getInterval : function () {
+			return $self.vars.interval;
+		},
+		
+		clearInterval : function () {
+			window.clearInterval($self.vars.interval);
+			delete $self.vars.interval;
+		},
+		
 		getTransitionValue : function () {
 			return $self.vars.transitionValue;
 		},
@@ -286,7 +299,7 @@ POODLE.Engine = POODLE.Engine || {};
 				});
 			}
 			
-			window.setInterval(function () {
+			$self.utils.setInterval(function () {
 				tilter.translate(x, 0, 0);
 				
 				var collision = $self.utils.checkForCollision(poodler);
