@@ -38,6 +38,7 @@ section, section * {
 	bottom: -45px;
 	left: 31px;
 	position: absolute;
+	z-index: 2;
 	-webkit-transition-property: -webkit-transform;
 }
 
