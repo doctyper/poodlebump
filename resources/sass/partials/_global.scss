@@ -70,4 +70,14 @@ section, section * {
 	&.spring {
 		background: #0f0;
 	}
+	
+	&.break {
+		background: #aaa;
+		-webkit-transition: opacity 150ms ease-out;
+		
+		&.broken {
+			pointer-events: none;
+			opacity: 0;
+		}
+	}
 }

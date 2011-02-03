@@ -108,10 +108,11 @@ section, section * {
   bottom: -45px;
   left: 31px;
   position: absolute;
+  z-index: 2;
   -webkit-transition-property: -webkit-transform;
 }
 
-/* line 44, ../resources/sass/partials/_global.scss */
+/* line 45, ../resources/sass/partials/_global.scss */
 #poodler-z {
   width: 100%;
   height: 100%;
@@ -123,12 +124,12 @@ section, section * {
   border-radius: 0 15px 15px 0;
   -webkit-backface-visibility: visible;
 }
-/* line 53, ../resources/sass/partials/_global.scss */
+/* line 54, ../resources/sass/partials/_global.scss */
 #poodler-z.right {
   -webkit-transform: rotateY(-180deg);
 }
 
-/* line 58, ../resources/sass/partials/_global.scss */
+/* line 59, ../resources/sass/partials/_global.scss */
 .platform {
   bottom: 90px;
   left: 30px;
@@ -140,9 +141,19 @@ section, section * {
   border-radius: 10px;
   z-index: 1;
 }
-/* line 69, ../resources/sass/partials/_global.scss */
+/* line 70, ../resources/sass/partials/_global.scss */
 .platform.spring {
   background: #0f0;
+}
+/* line 74, ../resources/sass/partials/_global.scss */
+.platform.break {
+  background: #aaa;
+  -webkit-transition: opacity 150ms ease-out;
+}
+/* line 78, ../resources/sass/partials/_global.scss */
+.platform.break.broken {
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* line 1, ../resources/sass/partials/_header.scss */

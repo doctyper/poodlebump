@@ -41,6 +41,8 @@ POODLE.Engine = POODLE.Engine || {};
 	
 	    PLATFORM = "platform",
 	    SPRING = "spring",
+	    BREAK = "break",
+	    BROKEN = "broken",
 	
 	    X,
 	    EVENTS = {},
@@ -101,9 +103,13 @@ POODLE.Engine = POODLE.Engine || {};
 			
 			if (POODLER.hasClass(BOUNCE_DOWN) && collision.length && collision.hasClass(PLATFORM)) {
 				ACTIVE_PLATFORM = collision;
-				
-				value = collision.rect().top - POODLER.rect().bottom;
 				$self.utils.centerPlatform(collision);
+				
+				if (collision.hasClass(BREAK)) {
+					$self.utils.breakPlatform(collision);
+				} else {
+					value = collision.rect().top - POODLER.rect().bottom;
+				}
 			}
 			
 			return value;
@@ -131,16 +137,42 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 		},
 		
+		breakPlatform : function (platform) {
+			platform.addClass(BROKEN);
+		},
+		
 		randomFromTo : function (from, to) {
 			return Math.floor(Math.random() * (to - from + 1) + from);
 		},
 		
+		buildRandomSeed : function (amount) {
+			var randomSeed = [], i, j;
+			
+			for (i = 0, j = amount; i < j; i++) {
+				randomSeed.push(Math.floor(Math.random() * 100));
+			}
+			
+			return randomSeed;
+		},
+		
 		getRandomClassName : function () {
 			var randomNumber = Math.floor(Math.random() * 100),
+			    springSeed = $self.utils.buildRandomSeed(10),
+			    breakSeed = $self.utils.buildRandomSeed(5),
 			    _class = "";
 			
-			if (randomNumber < 10) {
-				_class = SPRING;
+			for (i = 0, j = springSeed.length; i < j; i++) {
+				if (randomNumber === springSeed[i]) {
+					_class = SPRING;
+					break;
+				}
+			}
+			
+			for (i = 0, j = breakSeed.length; i < j; i++) {
+				if (randomNumber === breakSeed[i]) {
+					_class = BREAK;
+					break;
+				}
 			}
 			
 			return _class;
