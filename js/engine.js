@@ -37,7 +37,8 @@ POODLE.Engine = POODLE.Engine || {};
 		Shared local variables
 	*/
 	$self.vars = {
-		transitionValue : 75,
+		transitionDuration : 550,
+		transitionValue : 150,
 		firstPlatformOffset : 90,
 		platformHeight : (15 / 2),
 		platformThreshold : 10,
@@ -56,6 +57,14 @@ POODLE.Engine = POODLE.Engine || {};
 			}, 0);
 		},
 		
+		setGlobalTransition : function (value) {
+			$self.vars.globalTransitionValue = value;
+		},
+		
+		getGlobalTransition : function () {
+			return $self.vars.transitionDuration;
+		},
+		
 		setVerticalHeight : function (canvas) {
 			$self.vars.verticalHeight = canvas.height();
 		},
@@ -70,6 +79,19 @@ POODLE.Engine = POODLE.Engine || {};
 		
 		getVerticalCenter : function () {
 			return $self.vars.verticalCenter;
+		},
+		
+		setInterval : function (interval, timer) {
+			$self.vars.interval = window.setInterval(interval, timer);
+		},
+		
+		getInterval : function () {
+			return $self.vars.interval;
+		},
+		
+		clearInterval : function () {
+			window.clearInterval($self.vars.interval);
+			delete $self.vars.interval;
 		},
 		
 		getTransitionValue : function () {
@@ -106,33 +128,30 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 		},
 		
-		checkForPlatforms : function (el) {
-			if (!el.length) {
+		checkForCollision : function (poodler) {
+			if (!poodler.length) {
 				return;
 			}
 			
-			var rect = el.rect(),
+			var rect = poodler.rect(),
 			    offsetLeft = Math.max(0, rect.left),
 			    offsetRight = Math.min(320, rect.left + rect.width),
 			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
 			    i, j, translation = $self.utils.getTransitionValue(),
-			    collision;
+			    value, collision;
 			
-			for (i = 1, j = translation; i < j; i++) {
-				collision = $(document.elementFromPoint(offsetLeft, offsetTop + i));
-				
-				if (!collision.hasClass("platform")) {
-					collision = $(document.elementFromPoint(offsetRight, offsetTop + i));
-				}
-				
-				if (collision.hasClass("platform")) {
-					break;
-				} else {
-					collision = false;
-				}
+			collision = $(document.elementFromPoint(offsetLeft, offsetTop));
+			
+			if (collision.length && !collision.hasClass("platform")) {
+				collision = $(document.elementFromPoint(offsetRight, offsetTop));
 			}
 			
-			return collision;
+			if (poodler.hasClass("bounce-down") && collision.length && collision.hasClass("platform")) {
+				value = collision.rect().top - poodler.rect().bottom;
+				$self.utils.centerPlatform(collision);
+			}
+			
+			return value;
 		},
 		
 		centerPlatform : function (platform) {
@@ -176,12 +195,16 @@ POODLE.Engine = POODLE.Engine || {};
 		checkPlatformCount : function (section, platform) {
 			var platforms = $(".platform"),
 			    index = platforms.index(platform),
-			    threshold = $self.utils.getPlatformThreshold(),
-			    verticalHeight = $self.utils.getVerticalHeight();
+			    threshold = $self.utils.getPlatformThreshold();
 			
 			if (platforms.length - index < threshold) {
 				$self.utils.addPlatforms(section);
 			}
+		},
+		
+		removeOldPlatforms : function () {
+			var verticalHeight = $self.utils.getVerticalHeight(),
+			    platforms = $(".platform");
 			
 			platforms.each(function (i, platform) {
 				if ($(platform).rect().top > verticalHeight) {
@@ -194,18 +217,17 @@ POODLE.Engine = POODLE.Engine || {};
 		
 		addPlatforms : function (section) {
 			var i, j, platform, previous,
-			    previousX, previousY, constantY,
+			    previousY, constantY,
 			    randomOffset, x, y;
 			
 			for (i = 0, j = 20; i < j; i++) {
 				platform = $('<div></div>').addClass("platform");
 				previous = $(".platform:last-child", section);
-				previousX = previous.get(0).offsetLeft;
 				previousY = window.parseInt(previous.css("bottom"));
 				constantY = $self.utils.getConstantY();
 				randomOffset = $self.utils.getConstantOffset();
 
-				x = $self.utils.randomFromTo(Math.min(320, previousX + 150), Math.max(0, previousX - 150));
+				x = $self.utils.randomFromTo(0, 320 - 57);
 
 				y = previousY + constantY;
 				y = $self.utils.randomFromTo(y - randomOffset, y + randomOffset);
@@ -227,11 +249,39 @@ POODLE.Engine = POODLE.Engine || {};
 			    transition = $self.utils.getTransitionValue(),
 			    startValue = offset - transition;
 
-			poodler.transition(startValue * (startValue / transition)).translate(0, startValue, 0);
+			$self.utils.setGlobalTransition(startValue * (startValue / transition));
+			poodler.transition($self.utils.getGlobalTransition()).translate(0, startValue, 0);
+		},
+		
+		setupPollingEngine : function () {
+			$self.utils.setInterval(function () {
+				$self.utils.fireEvent("poll");
+			}, 0);
+		},
+		
+		addEvent : function (type, handler) {
+			$self.vars.events = $self.vars.events || {};
+			$self.vars.events[type] = $self.vars.events[type] || [];
+			
+			$self.vars.events[type].push(handler);
+		},
+		
+		fireEvent : function (type) {
+			var array = $self.vars.events[type];
+			
+			if (array) {
+				$(array).each(function (i, handler) {
+					handler();
+				});
+			}
 		},
 		
 		activatePoodler : function (poodler) {
 			return poodler.addClass("bounce-up");
+		},
+		
+		youJustLostTheGame : function () {
+			$self.utils.clearInterval();
 		}
 	};
 	
@@ -240,42 +290,102 @@ POODLE.Engine = POODLE.Engine || {};
 		Shared local events
 	*/
 	$self.utils.events = {
-		transitionEnd : function (poodler) {
+		transitionEnd : function (poodler, section) {
 			poodler.bind("webkitTransitionEnd", function (e) {
-				var platform = $self.utils.checkForPlatforms(poodler),
+				var isTriggered = e.constructor.AT_TARGET,
 				    transition = $self.utils.getTransitionValue(),
 				    offset;
+				
+				if (e.target === this) {
+					poodler.transition($self.utils.getGlobalTransition());
 
-				if (!poodler.hasClass("bounce-down")) {
-					if (platform.length) {
-						offset = $self.utils.calcOffset(poodler, platform);
-						poodler.translate(0, offset, 0);
-					} else {
+					if (!poodler.hasClass("bounce-down")) {
+						poodler.removeClass("game-over").addClass("bounce-down");
 						poodler.translate(0, transition, 0);
-					}
+					} else {
+						if (!isTriggered) {
+							if (poodler.hasClass("game-over")) {
+								console.log("Game Over!");
+								$self.utils.youJustLostTheGame();
+								return false;
+							} else {
+								transition = poodler.rect().top - $("#canvas").height();
+								poodler.addClass("game-over");
+							}
+						} else {
+							poodler.removeClass("game-over").removeClass("bounce-down");
+						}
 
-					poodler.addClass("bounce-down");
-				} else {
-					if (platform) {
-						$self.utils.centerPlatform(platform);
+						poodler.translate(0, -transition, 0);
 					}
-					poodler.translate(0, -transition, 0);
-					poodler.removeClass("bounce-down");
+					
+					$self.utils.removeOldPlatforms();
 				}
 			}, false);
 		},
 
-		deviceMotion : function (tilter) {
-			var gravity, x;
+		deviceMotion : function () {
+			var gravity;
+			$self.vars.direction = "";
 			
-			$(window).bind("devicemotion", function (e) {
-				gravity = e.accelerationIncludingGravity;
-				x = gravity.x;
+			if ("DeviceMotionEvent" in window) {
+				$(window).bind("devicemotion", function (e) {
+					gravity = e.accelerationIncludingGravity;
+					
+					$self.vars.x = gravity.x;
+					
+					if ($self.vars.x > 0) {
+						$self.vars.direction = "right";
+					} else {
+						$self.vars.direction = "left";
+					}
+				});
+			} else {
+				$self.vars.x = 0;
+				$(window).bind("keydown", function (e) {
+					$self.vars.x = (e.keyCode === 39) ? 30 : -30;
+				});
+			}
+		},
+		
+		collision : function (poodler) {
+			$self.utils.addEvent("collision", function () {
+				poodler.trigger("webkitTransitionEnd");
 			});
+		},
+		
+		polling : function (poodler, tilter, face) {
+			var collision, verifyCollision;
 			
-			window.setInterval(function () {
-				tilter.translate(x, 0, 0);
-			}, 0);
+			$self.utils.addEvent("poll", function () {
+				tilter.translate($self.vars.x, 0, 0);
+				
+				collision = $self.utils.checkForCollision(poodler);
+				
+				if (collision !== undefined) {
+					poodler.transition(0);
+					poodler.translate(0, collision, 0);
+					
+					if (!verifyCollision) {
+						verifyCollision = 1;
+					}
+				}
+				
+				if (verifyCollision) {
+					if (verifyCollision > 1) {
+						verifyCollision = 0;
+						$self.utils.fireEvent("collision");
+					} else {
+						verifyCollision = verifyCollision + 1;
+					}
+				}
+				
+				face.attr("class", $self.vars.direction);
+				
+				if (!("DeviceMotionEvent" in window)) {
+					$self.vars.x = 0;
+				}
+			});
 		}
 	};
 	
@@ -289,9 +399,10 @@ POODLE.Engine = POODLE.Engine || {};
 	*/
 	$self.initialize = function () {
 		var canvas = $("#canvas"),
-		    poodler = canvas.find("#poodler"),
 		    section = canvas.find("section"),
-		    tilter = canvas.find("#poodler-tilt");
+		    poodler = canvas.find("#poodler-y"),
+		    tilter = canvas.find("#poodler-x"),
+		    face = canvas.find("#poodler-z");
 		
 		// Hide URL Bar
 		$self.utils.hideNavigationBar();
@@ -301,12 +412,15 @@ POODLE.Engine = POODLE.Engine || {};
 		$self.utils.setVerticalCenter(canvas);
 		
 		// Layout Starting Template
+		$self.utils.setupPollingEngine();
 		$self.utils.layoutInitialGrid(section);
 		$self.utils.setInitialTransition(poodler, canvas);
 		
 		// Add Events
-		$self.utils.events.transitionEnd(poodler);
-		$self.utils.events.deviceMotion(tilter);
+		$self.utils.events.transitionEnd(poodler, section);
+		$self.utils.events.deviceMotion(poodler, tilter, face);
+		$self.utils.events.collision(poodler);
+		$self.utils.events.polling(poodler, tilter, face);
 		
 		// Start!
 		$self.utils.activatePoodler(poodler);
