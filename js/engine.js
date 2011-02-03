@@ -114,33 +114,31 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 		},
 		
-		checkForPlatforms : function (el) {
-			if (!el.length) {
+		checkForCollision : function (poodler) {
+			if (!poodler.length) {
 				return;
 			}
 			
-			var rect = el.rect(),
+			var rect = poodler.rect(),
 			    offsetLeft = Math.max(0, rect.left),
 			    offsetRight = Math.min(320, rect.left + rect.width),
 			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
 			    i, j, translation = $self.utils.getTransitionValue(),
+			    value,
 			    collision;
 			
-			for (i = 1, j = translation; i < j; i++) {
-				collision = $(document.elementFromPoint(offsetLeft, offsetTop + i));
-				
-				if (!collision.hasClass("platform")) {
-					collision = $(document.elementFromPoint(offsetRight, offsetTop + i));
-				}
-				
-				if (collision.hasClass("platform")) {
-					break;
-				} else {
-					collision = false;
-				}
+			collision = $(document.elementFromPoint(offsetLeft, offsetTop));
+			
+			if (!collision.hasClass("platform")) {
+				collision = $(document.elementFromPoint(offsetRight, offsetTop));
 			}
 			
-			return collision;
+			if (poodler.hasClass("bounce-down") && collision.hasClass("platform")) {
+				value = collision.rect().top - poodler.rect().bottom;
+				$self.utils.centerPlatform(collision);
+			}
+			
+			return value;
 		},
 		
 		centerPlatform : function (platform) {
