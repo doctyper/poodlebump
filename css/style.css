@@ -129,7 +129,19 @@ section, section * {
   -webkit-transform: rotateY(-180deg);
 }
 
-/* line 59, ../resources/sass/partials/_global.scss */
+@-webkit-keyframes sway {
+  /* line 60, ../resources/sass/partials/_global.scss */
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+
+  /* line 64, ../resources/sass/partials/_global.scss */
+  to {
+    -webkit-transform: translate3d(263px, 0, 0);
+  }
+}
+
+/* line 69, ../resources/sass/partials/_global.scss */
 .platform {
   bottom: 90px;
   left: 30px;
@@ -141,19 +153,25 @@ section, section * {
   border-radius: 10px;
   z-index: 1;
 }
-/* line 70, ../resources/sass/partials/_global.scss */
+/* line 80, ../resources/sass/partials/_global.scss */
 .platform.spring {
   background: #0f0;
 }
-/* line 74, ../resources/sass/partials/_global.scss */
+/* line 84, ../resources/sass/partials/_global.scss */
 .platform.break {
   background: #aaa;
   -webkit-transition: opacity 150ms ease-out;
 }
-/* line 78, ../resources/sass/partials/_global.scss */
+/* line 88, ../resources/sass/partials/_global.scss */
 .platform.break.broken {
   pointer-events: none;
   opacity: 0;
+}
+/* line 94, ../resources/sass/partials/_global.scss */
+.platform.moving {
+  -webkit-animation: sway 2000ms ease-in-out;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-iteration-count: infinite;
 }
 
 /* line 1, ../resources/sass/partials/_header.scss */
