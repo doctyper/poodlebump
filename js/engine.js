@@ -28,127 +28,89 @@ POODLE.Engine = POODLE.Engine || {};
 
 (function () {
 	
-	// Storing a variable to reference
-	var $space = POODLE;
-	var $self = $space.Engine;
-	
 	/*
 	Namespace: POODLE.Engine.vars
 		Shared local variables
 	*/
-	$self.vars = {
-		transitionDuration : 550,
-		transitionValue : 150,
-		firstPlatformOffset : 90,
-		platformHeight : (15 / 2),
-		platformThreshold : 10,
-		constantY : 40,
-		constantOffset : 20
-	};
+	var $space = POODLE,
+	    $self = $space.Engine,
+	
+	    BOUNCE_UP = "bounce-up",
+	    BOUNCE_DOWN = "bounce-down",
+	    GAME_OVER = "game-over",
+	
+	    PLATFORM = "platform",
+	    SPRING = "spring",
+	    BREAK = "break",
+	    BROKEN = "broken",
+	    MOVE = "moving",
+	
+	    X,
+	    EVENTS = {},
+	    DIRECTION,
+	    VERTICAL_HEIGHT,
+	    VERTICAL_CENTER,
+	    INTERVAL,
+	    CANVAS,
+	    SECTION,
+	    POODLER,
+	    TILTER,
+	    FACE,
+	    ACTIVE_PLATFORM;
+	
+	/*
+	Namespace: POODLE.Engine.consts
+		Shared local variables
+	*/
+	const TRANSITION_DURATION = 550,
+	      TRANSLATE_VALUE = 150,
+	      FIRST_PLATFORM_OFFSET = 90,
+	      PLATFORM_HEIGHT = (15 / 2),
+	      PLATFORM_THRESHOLD = 10,
+	      CONSTANT_Y = 40,
+	      CONSTANT_OFFSET = 20;
 	
 	/*
 	Namespace: POODLE.Engine.utils
 		Shared local utilities
 	*/
 	$self.utils = {
-		hideNavigationBar : function () {
-			window.setTimeout(function() {
-				window.scrollTo(0, 0);
-			}, 0);
-		},
-		
-		setGlobalTransition : function (value) {
-			$self.vars.globalTransitionValue = value;
-		},
-		
-		getGlobalTransition : function () {
-			return $self.vars.transitionDuration;
-		},
-		
-		setVerticalHeight : function (canvas) {
-			$self.vars.verticalHeight = canvas.height();
-		},
-		
-		getVerticalHeight : function () {
-			return $self.vars.verticalHeight;
-		},
-		
-		setVerticalCenter : function (canvas) {
-			$self.vars.verticalCenter = $self.vars.verticalHeight / 2;
-		},
-		
-		getVerticalCenter : function () {
-			return $self.vars.verticalCenter;
-		},
-		
 		setInterval : function (interval, timer) {
-			$self.vars.interval = window.setInterval(interval, timer);
-		},
-		
-		getInterval : function () {
-			return $self.vars.interval;
+			INTERVAL = window.setInterval(interval, timer);
 		},
 		
 		clearInterval : function () {
-			window.clearInterval($self.vars.interval);
-			delete $self.vars.interval;
+			window.clearInterval(INTERVAL);
+			delete INTERVAL;
 		},
 		
-		getTransitionValue : function () {
-			return $self.vars.transitionValue;
-		},
-		
-		getFirstPlatform : function (canvas) {
-			return $(".platform", canvas).eq(0);
-		},
-		
-		getPlatformThreshold : function () {
-			return $self.vars.platformThreshold;
-		},
-		
-		getPlatformHeight : function () {
-			return $self.vars.platformHeight;
-		},
-		
-		getConstantY : function () {
-			return $self.vars.constantY;
-		},
-		
-		getConstantOffset : function () {
-			return $self.vars.constantOffset;
-		},
-		
-		getInitialOffset : function () {
-			return $self.vars.firstPlatformOffset;
-		},
-		
-		stashVars : function (obj) {
-			for (var key in obj) {
-				$self.vars[key] = obj[key];
-			}
-		},
-		
-		checkForCollision : function (poodler) {
-			if (!poodler.length) {
+		checkForCollision : function () {
+			if (!POODLER.length) {
 				return;
 			}
 			
-			var rect = poodler.rect(),
+			var rect = POODLER.rect(),
 			    offsetLeft = Math.max(0, rect.left),
 			    offsetRight = Math.min(320, rect.left + rect.width),
-			    offsetTop = rect.bottom + $self.utils.getPlatformHeight(),
-			    i, j, translation = $self.utils.getTransitionValue(),
+			    offsetTop = rect.bottom + PLATFORM_HEIGHT,
+			    i, j, translation = TRANSLATE_VALUE,
 			    value, collision;
 			
 			collision = $(document.elementFromPoint(offsetLeft, offsetTop));
 			
-			if (collision.length && !collision.hasClass("platform")) {
+			if (collision.length && !collision.hasClass(PLATFORM)) {
 				collision = $(document.elementFromPoint(offsetRight, offsetTop));
 			}
 			
-			if (poodler.hasClass("bounce-down") && collision.length && collision.hasClass("platform")) {
-				value = collision.rect().top - poodler.rect().bottom;
+			if (POODLER.hasClass(BOUNCE_DOWN) && collision.length && collision.hasClass(PLATFORM)) {
+				ACTIVE_PLATFORM = collision;
 				$self.utils.centerPlatform(collision);
+				
+				if (collision.hasClass(BREAK)) {
+					$self.utils.breakPlatform(collision);
+				} else {
+					value = collision.rect().top - POODLER.rect().bottom;
+				}
 			}
 			
 			return value;
@@ -160,51 +122,84 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 			
 			var rect = platform.rect(),
-			    center = $self.utils.getVerticalCenter(),
-			    section = platform.parent();
+			    center = VERTICAL_CENTER,
+			    transition = TRANSITION_DURATION,
+			    multiplier = 1;
+			
+			if (platform.hasClass(SPRING)) {
+				multiplier = 2.5;
+			}
 			
 			if (rect.top < center) {
-				section.translate(0, $self.utils.getVerticalCenter() - rect.top, 0);
-				$self.utils.checkPlatformCount(section, platform);
+				SECTION.transition(transition);
+				SECTION.translate(0, (VERTICAL_CENTER - rect.top) * multiplier, 0);
+				
+				$self.utils.checkPlatformCount(platform);
 			}
 		},
 		
-		calcOffset : function (el, obj) {
-			if (!el.length) {
-				return;
-			}
-			
-			var elRect = el.rect(),
-			    objRect = obj.rect();
-			
-			return objRect.top - elRect.bottom;
+		breakPlatform : function (platform) {
+			platform.addClass(BROKEN);
 		},
 		
 		randomFromTo : function (from, to) {
 			return Math.floor(Math.random() * (to - from + 1) + from);
 		},
 		
-		layoutInitialGrid : function (section) {
-			section.append($('<div></div>').addClass("platform").css({
-				bottom : $self.utils.getInitialOffset() + "px"
-			}));
+		buildRandomSeed : function (amount) {
+			var randomSeed = [], i, j;
 			
-			$self.utils.addPlatforms(section);
+			for (i = 0, j = amount; i < j; i++) {
+				randomSeed.push(Math.floor(Math.random() * 100));
+			}
+			
+			return randomSeed;
 		},
 		
-		checkPlatformCount : function (section, platform) {
-			var platforms = $(".platform"),
+		getRandomClassName : function () {
+			var randomNumber = Math.floor(Math.random() * 100),
+			    springSeed = $self.utils.buildRandomSeed(10),
+			    breakSeed = $self.utils.buildRandomSeed(10),
+			    moveSeed = $self.utils.buildRandomSeed(5),
+			    _class = "";
+			
+			for (i = 0, j = springSeed.length; i < j; i++) {
+				if (randomNumber === springSeed[i]) {
+					_class = SPRING;
+					break;
+				}
+			}
+			
+			for (i = 0, j = moveSeed.length; i < j; i++) {
+				if (randomNumber === moveSeed[i]) {
+					_class = MOVE;
+					break;
+				}
+			}
+			
+			for (i = 0, j = breakSeed.length; i < j; i++) {
+				if (randomNumber === breakSeed[i]) {
+					_class = BREAK;
+					break;
+				}
+			}
+			
+			return _class;
+		},
+		
+		checkPlatformCount : function (platform) {
+			var platforms = $(".platform", SECTION),
 			    index = platforms.index(platform),
-			    threshold = $self.utils.getPlatformThreshold();
+			    threshold = PLATFORM_THRESHOLD;
 			
 			if (platforms.length - index < threshold) {
-				$self.utils.addPlatforms(section);
+				$self.utils.addPlatforms(SECTION);
 			}
 		},
 		
 		removeOldPlatforms : function () {
-			var verticalHeight = $self.utils.getVerticalHeight(),
-			    platforms = $(".platform");
+			var verticalHeight = VERTICAL_HEIGHT,
+			    platforms = $(".platform", SECTION);
 			
 			platforms.each(function (i, platform) {
 				if ($(platform).rect().top > verticalHeight) {
@@ -215,20 +210,26 @@ POODLE.Engine = POODLE.Engine || {};
 			});
 		},
 		
-		addPlatforms : function (section) {
+		addPlatforms : function () {
 			var i, j, platform, previous,
 			    previousY, constantY,
+			    randomSeed,
 			    randomOffset, x, y;
 			
 			for (i = 0, j = 20; i < j; i++) {
-				platform = $('<div></div>').addClass("platform");
-				previous = $(".platform:last-child", section);
+				platform = $('<div></div>').addClass(PLATFORM);
+				previous = $(".platform:last-child", SECTION);
 				previousY = window.parseInt(previous.css("bottom"));
-				constantY = $self.utils.getConstantY();
-				randomOffset = $self.utils.getConstantOffset();
-
-				x = $self.utils.randomFromTo(0, 320 - 57);
-
+				constantY = CONSTANT_Y;
+				randomOffset = CONSTANT_OFFSET;
+				randomSeed = $self.utils.getRandomClassName();
+				
+				if (randomSeed === MOVE) {
+					x = 0
+				} else {
+					x = $self.utils.randomFromTo(0, 320 - 57);
+				}
+				
 				y = previousY + constantY;
 				y = $self.utils.randomFromTo(y - randomOffset, y + randomOffset);
 
@@ -236,38 +237,24 @@ POODLE.Engine = POODLE.Engine || {};
 					bottom : y + "px",
 					left : x + "px"
 				});
+				
+				if (randomSeed) {
+					platform.addClass(randomSeed);
+				}
 
-				section.append(platform);
+				SECTION.append(platform);
 			}
 			
 			return platform;
 		},
 		
-		setInitialTransition : function (poodler, canvas) {
-			var platform = $self.utils.getFirstPlatform(canvas),
-			    offset = platform.offset().top - canvas.height(),
-			    transition = $self.utils.getTransitionValue(),
-			    startValue = offset - transition;
-
-			$self.utils.setGlobalTransition(startValue * (startValue / transition));
-			poodler.transition($self.utils.getGlobalTransition()).translate(0, startValue, 0);
-		},
-		
-		setupPollingEngine : function () {
-			$self.utils.setInterval(function () {
-				$self.utils.fireEvent("poll");
-			}, 0);
-		},
-		
 		addEvent : function (type, handler) {
-			$self.vars.events = $self.vars.events || {};
-			$self.vars.events[type] = $self.vars.events[type] || [];
-			
-			$self.vars.events[type].push(handler);
+			EVENTS[type] = EVENTS[type] || [];
+			EVENTS[type].push(handler);
 		},
 		
 		fireEvent : function (type) {
-			var array = $self.vars.events[type];
+			var array = EVENTS[type];
 			
 			if (array) {
 				$(array).each(function (i, handler) {
@@ -276,12 +263,51 @@ POODLE.Engine = POODLE.Engine || {};
 			}
 		},
 		
-		activatePoodler : function (poodler) {
-			return poodler.addClass("bounce-up");
+		activatePoodler : function () {
+			return POODLER.addClass(BOUNCE_UP);
 		},
 		
 		youJustLostTheGame : function () {
 			$self.utils.clearInterval();
+		}
+	};
+	
+	$self.utils.properties = {
+		hideNavigationBar : function () {
+			window.setTimeout(function() {
+				window.scrollTo(0, 0);
+			}, 0);
+		},
+		
+		setVerticalHeight : function () {
+			VERTICAL_HEIGHT = CANVAS.height();
+		},
+		
+		setVerticalCenter : function () {
+			VERTICAL_CENTER = VERTICAL_HEIGHT / 2;
+		},
+		
+		setupPollingEngine : function () {
+			$self.utils.setInterval(function () {
+				$self.utils.fireEvent("poll");
+			}, 0);
+		},
+		
+		layoutInitialGrid : function () {
+			SECTION.append($('<div></div>').addClass(PLATFORM).css({
+				bottom : FIRST_PLATFORM_OFFSET + "px"
+			}));
+			
+			$self.utils.addPlatforms();
+		},
+		
+		setInitialTransition : function () {
+			var platform = $(".platform", SECTION).eq(0),
+			    offset = platform.offset().top - CANVAS.height(),
+			    translation = TRANSLATE_VALUE,
+			    startValue = offset - translation;
+
+			POODLER.transition(TRANSITION_DURATION).translate(0, startValue, 0);
 		}
 	};
 	
@@ -290,33 +316,42 @@ POODLE.Engine = POODLE.Engine || {};
 		Shared local events
 	*/
 	$self.utils.events = {
-		transitionEnd : function (poodler, section) {
-			poodler.bind("webkitTransitionEnd", function (e) {
+		transitionEnd : function () {
+			POODLER.bind("webkitTransitionEnd", function (e) {
 				var isTriggered = e.constructor.AT_TARGET,
-				    transition = $self.utils.getTransitionValue(),
+				    translation = TRANSLATE_VALUE,
+				    duration = TRANSITION_DURATION,
 				    offset;
 				
 				if (e.target === this) {
-					poodler.transition($self.utils.getGlobalTransition());
+					
+					if (ACTIVE_PLATFORM) {
+						if (ACTIVE_PLATFORM.hasClass(SPRING)) {
+							duration *= 1.5;
+							translation *= 2;
+						}
+					}
+					
+					POODLER.transition(duration);
 
-					if (!poodler.hasClass("bounce-down")) {
-						poodler.removeClass("game-over").addClass("bounce-down");
-						poodler.translate(0, transition, 0);
+					if (!POODLER.hasClass(BOUNCE_DOWN)) {
+						POODLER.removeClass(GAME_OVER).addClass(BOUNCE_DOWN);
+						POODLER.translate(0, translation, 0);
 					} else {
 						if (!isTriggered) {
-							if (poodler.hasClass("game-over")) {
+							if (POODLER.hasClass(GAME_OVER)) {
 								console.log("Game Over!");
 								$self.utils.youJustLostTheGame();
 								return false;
 							} else {
-								transition = poodler.rect().top - $("#canvas").height();
-								poodler.addClass("game-over");
+								translation = POODLER.rect().top - CANVAS.height();
+								POODLER.addClass(GAME_OVER);
 							}
 						} else {
-							poodler.removeClass("game-over").removeClass("bounce-down");
+							POODLER.removeClass(GAME_OVER).removeClass(BOUNCE_DOWN);
 						}
 
-						poodler.translate(0, -transition, 0);
+						POODLER.translate(0, -translation, 0);
 					}
 					
 					$self.utils.removeOldPlatforms();
@@ -326,45 +361,51 @@ POODLE.Engine = POODLE.Engine || {};
 
 		deviceMotion : function () {
 			var gravity;
-			$self.vars.direction = "";
+			DIRECTION = "";
 			
 			if ("DeviceMotionEvent" in window) {
 				$(window).bind("devicemotion", function (e) {
 					gravity = e.accelerationIncludingGravity;
 					
-					$self.vars.x = gravity.x;
+					X = gravity.x;
 					
-					if ($self.vars.x > 0) {
-						$self.vars.direction = "right";
+					if (X > 0) {
+ 						DIRECTION = "left";
 					} else {
-						$self.vars.direction = "left";
+ 						DIRECTION = "right";
 					}
 				});
 			} else {
-				$self.vars.x = 0;
+				X = 0;
 				$(window).bind("keydown", function (e) {
-					$self.vars.x = (e.keyCode === 39) ? 30 : -30;
+					X = (e.keyCode === 39) ? 30 : -30;
 				});
 			}
 		},
 		
-		collision : function (poodler) {
+		collision : function () {
 			$self.utils.addEvent("collision", function () {
-				poodler.trigger("webkitTransitionEnd");
+				POODLER.trigger("webkitTransitionEnd");
 			});
 		},
 		
-		polling : function (poodler, tilter, face) {
+		polling : function () {
 			var collision, verifyCollision;
 			
 			$self.utils.addEvent("poll", function () {
-				tilter.translate($self.vars.x, 0, 0);
+				TILTER.translate(X, 0, 0);
 				
-				collision = $self.utils.checkForCollision(poodler);
+				if (!("DeviceMotionEvent" in window)) {
+					X = 0;
+				}
+			});
+			
+			$self.utils.addEvent("poll", function () {
+				collision = $self.utils.checkForCollision();
 				
 				if (collision !== undefined) {
-					poodler.transition(0);
-					poodler.translate(0, collision, 0);
+					POODLER.transition(0);
+					POODLER.translate(0, collision, 0);
 					
 					if (!verifyCollision) {
 						verifyCollision = 1;
@@ -379,11 +420,15 @@ POODLE.Engine = POODLE.Engine || {};
 						verifyCollision = verifyCollision + 1;
 					}
 				}
-				
-				face.attr("class", $self.vars.direction);
-				
-				if (!("DeviceMotionEvent" in window)) {
-					$self.vars.x = 0;
+			});
+			
+			var delay = 0;
+			$self.utils.addEvent("poll", function () {
+				if (delay === 20) {
+					FACE.attr("class", DIRECTION);
+					delay = 0;
+				} else {
+					delay++;
 				}
 			});
 		}
@@ -398,32 +443,26 @@ POODLE.Engine = POODLE.Engine || {};
 	Function: initialize
 	*/
 	$self.initialize = function () {
-		var canvas = $("#canvas"),
-		    section = canvas.find("section"),
-		    poodler = canvas.find("#poodler-y"),
-		    tilter = canvas.find("#poodler-x"),
-		    face = canvas.find("#poodler-z");
+		var key;
 		
-		// Hide URL Bar
-		$self.utils.hideNavigationBar();
+		CANVAS = $("#canvas");
+		SECTION = CANVAS.find("section");
+		POODLER = CANVAS.find("#poodler-y");
+		TILTER = CANVAS.find("#poodler-x");
+		FACE = CANVAS.find("#poodler-z");
 		
-		// Set Default Properties
-		$self.utils.setVerticalHeight(canvas);
-		$self.utils.setVerticalCenter(canvas);
-		
-		// Layout Starting Template
-		$self.utils.setupPollingEngine();
-		$self.utils.layoutInitialGrid(section);
-		$self.utils.setInitialTransition(poodler, canvas);
+		// Setup Initial Properties
+		for (key in $self.utils.properties) {
+			$self.utils.properties[key]();
+		}
 		
 		// Add Events
-		$self.utils.events.transitionEnd(poodler, section);
-		$self.utils.events.deviceMotion(poodler, tilter, face);
-		$self.utils.events.collision(poodler);
-		$self.utils.events.polling(poodler, tilter, face);
+		for (key in $self.utils.events) {
+			$self.utils.events[key]();
+		}
 		
 		// Start!
-		$self.utils.activatePoodler(poodler);
+		$self.utils.activatePoodler();
 	};
 	
 	/*
