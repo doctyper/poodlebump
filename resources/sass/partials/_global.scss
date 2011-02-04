@@ -56,6 +56,16 @@ section, section * {
 	}
 }
 
+@-webkit-keyframes sway {
+	from {
+		-webkit-transform: translate3d(0, 0, 0);
+	}
+	
+	to {
+		-webkit-transform: translate3d(263px, 0, 0);
+	}
+}
+
 .platform {
 	bottom: 90px;
 	left: 30px;
@@ -79,5 +89,11 @@ section, section * {
 			pointer-events: none;
 			opacity: 0;
 		}
+	}
+	
+	&.moving {
+		-webkit-animation: sway 2000ms ease-in-out;
+		-webkit-animation-direction: alternate;
+		-webkit-animation-iteration-count: infinite;
 	}
 }

@@ -43,6 +43,7 @@ POODLE.Engine = POODLE.Engine || {};
 	    SPRING = "spring",
 	    BREAK = "break",
 	    BROKEN = "broken",
+	    MOVE = "moving",
 	
 	    X,
 	    EVENTS = {},
@@ -158,12 +159,20 @@ POODLE.Engine = POODLE.Engine || {};
 		getRandomClassName : function () {
 			var randomNumber = Math.floor(Math.random() * 100),
 			    springSeed = $self.utils.buildRandomSeed(10),
-			    breakSeed = $self.utils.buildRandomSeed(5),
+			    breakSeed = $self.utils.buildRandomSeed(10),
+			    moveSeed = $self.utils.buildRandomSeed(5),
 			    _class = "";
 			
 			for (i = 0, j = springSeed.length; i < j; i++) {
 				if (randomNumber === springSeed[i]) {
 					_class = SPRING;
+					break;
+				}
+			}
+			
+			for (i = 0, j = moveSeed.length; i < j; i++) {
+				if (randomNumber === moveSeed[i]) {
+					_class = MOVE;
 					break;
 				}
 			}
@@ -214,9 +223,13 @@ POODLE.Engine = POODLE.Engine || {};
 				constantY = CONSTANT_Y;
 				randomOffset = CONSTANT_OFFSET;
 				randomSeed = $self.utils.getRandomClassName();
-
-				x = $self.utils.randomFromTo(0, 320 - 57);
-
+				
+				if (randomSeed === MOVE) {
+					x = 0
+				} else {
+					x = $self.utils.randomFromTo(0, 320 - 57);
+				}
+				
 				y = previousY + constantY;
 				y = $self.utils.randomFromTo(y - randomOffset, y + randomOffset);
 
