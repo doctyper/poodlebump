@@ -422,8 +422,14 @@ POODLE.Engine = POODLE.Engine || {};
 				}
 			});
 			
+			var delay = 0;
 			$self.utils.addEvent("poll", function () {
-				FACE.attr("class", DIRECTION);
+				if (delay === 20) {
+					FACE.attr("class", DIRECTION);
+					delay = 0;
+				} else {
+					delay++;
+				}
 			});
 		}
 	};
